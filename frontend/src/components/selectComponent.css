@@ -1,0 +1,97 @@
+/* Select Component from Figma layer Components (9:113) */
+
+.select {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.select__label {
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color: #000;
+}
+
+.select__control {
+  position: relative;
+  width: 100%;
+}
+
+.select__input {
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 14px;
+  padding-right: 38px;
+  border: 1px solid #e6e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111111;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.select__input:hover {
+  border-color: #d1d5db;
+}
+
+.select__input:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+/* Chevron dropdown arrow */
+.select__arrow {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111111;
+}
+
+/* Description text */
+.select__description {
+  display: none;
+}
+
+.select--with-description .select__description {
+  display: block;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #6d6d76;
+  margin-top: 4px;
+}
+
+/* Error state */
+.select--error .select__input {
+  border-color: #9c3333;
+  background: rgba(156, 51, 51, 0.05);
+}
+
+.select--error .select__error-message {
+  display: block;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #9c3333;
+  margin-top: 4px;
+}
+
+.select__error-message {
+  display: none;
+}

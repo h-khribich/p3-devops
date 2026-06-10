@@ -1,0 +1,56 @@
+/* Switch Component from Figma layer Components (9:113) */
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 24px;
+  border: 1px solid rgba(215, 99, 11, 0.2);
+  background: rgba(255, 193, 145, 0.16);
+  overflow: hidden;
+  padding: 0;
+}
+
+.switch__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 67px;
+  padding: 8px 16px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  line-height: 16px;
+  font-weight: 400;
+  color: #111111;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* Active state for switch items */
+.switch__item--active {
+  background: #e77a6e;
+  color: #ffffff;
+}
+
+.switch__item:hover:not(.switch__item--active) {
+  background: rgba(231, 122, 110, 0.1);
+}
+
+/* Specific item widths based on content */
+.switch__item:first-child {
+  min-width: auto;
+}
+
+.switch__item:last-child {
+  min-width: 78px;
+}
+
+/* Variant: Horizontal layout (for future responsive adjustments) */
+.switch--horizontal {
+  flex-direction: row;
+}
+
+.switch--vertical {
+  flex-direction: column;
+}

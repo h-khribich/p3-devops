@@ -1,0 +1,74 @@
+/* Input Component from Figma layer Components (9:113) */
+
+.input {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.input__label {
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color: #000;
+}
+
+.input__control {
+  max-width: 100%;
+  max-height: 40px;
+  padding: 12px 14px;
+  border: 1px solid #e6e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111111;
+  font-family: "DM Sans", sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.input__control::placeholder {
+  color: #9b9ba4;
+}
+
+.input__control:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+/* Description text */
+.input__description {
+  display: none;
+}
+
+.input--with-description .input__description {
+  display: block;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #6d6d76;
+  margin-top: 4px;
+}
+
+/* Error state */
+.input--error .input__control {
+  border-color: #9c3333;
+  background: rgba(156, 51, 51, 0.05);
+}
+
+.input--error .input__error-message {
+  display: block;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #9c3333;
+  margin-top: 4px;
+}
+
+.input__error-message {
+  display: none;
+}

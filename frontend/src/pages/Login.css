@@ -1,0 +1,138 @@
+/* Login Page Styles - Layout and Composition */
+
+.login-page {
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(
+    174.89441241221834deg,
+    rgb(255, 184, 140) 2.2853%,
+    rgb(222, 98, 98) 97.715%
+  );
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* Header positioning */
+.login-page__header {
+  width: 100%;
+  background: transparent;
+}
+
+.login-page__header .header__inner {
+  min-width: 90%;
+  padding: 24px 32px;
+}
+
+/* Main content area */
+.login-page__content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* Card container */
+.login-page__card {
+  width: 100%;
+  max-width: 640px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.25);
+  padding: 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Card title */
+.login-page__title {
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 28px;
+  line-height: 40px;
+  font-weight: 700;
+  text-align: center;
+  color: #000;
+}
+
+/* Form layout */
+.login-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Actions (buttons) */
+.login-page__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.login-page__actions .button {
+  width: 100%;
+  min-height: 48px;
+  padding: 14px 16px;
+}
+
+/* Button overrides for login page */
+.login-page__actions .button--secondary {
+  background: #ffffff;
+  border: 1px solid transparent;
+}
+
+.login-page__actions .button--secondary:hover {
+  background: #fff3e7;
+}
+
+/* Footer positioning */
+.login-page__footer {
+  padding: 10px 92px 24px;
+  width: calc(100% - 64px);
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.login-page__footer-text {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+  .login-page__header .header__inner {
+    padding: 24px 16px 0;
+  }
+
+  .login-page__content {
+    padding: 100px 16px 0;
+  }
+
+  .login-page__card {
+    max-width: 393px;
+    padding: 24px;
+  }
+
+  .login-page__footer {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    padding: 16px 16px 24px;
+  }
+
+  .login-page__footer-text {
+    color: #000000;
+  }
+}

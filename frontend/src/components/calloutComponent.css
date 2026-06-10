@@ -1,0 +1,65 @@
+/* Callout Component from Figma layer Components (9:113) */
+
+.callout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 8px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  line-height: 16px;
+  font-weight: 400;
+}
+
+/* Info type */
+.callout--info {
+  background: #e2ecff;
+  border-color: #b1c9f5;
+  color: #2a3f72;
+}
+
+/* Alert type */
+.callout--alert {
+  background: #fff5ed;
+  border-color: #e6cbb5;
+  color: #aa642b;
+}
+
+/* Error type */
+.callout--error {
+  background: #ffe2e2;
+  border-color: #e8a6a6;
+  color: #9c3333;
+}
+
+.callout__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.callout__text {
+  flex: 1 0 0;
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  line-height: 16px;
+  font-weight: 400;
+}
+
+.callout__icon-info {
+  color: #2a3f72;
+}
+
+.callout__icon-alert {
+  color: #aa642b;
+}
+
+.callout__icon-error {
+  color: #9c3333;
+}
