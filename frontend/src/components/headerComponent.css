@@ -1,5 +1,4 @@
 /* Header Component from Figma layer Components (9:113) */
-
 .header {
   display: flex;
   flex-direction: column;
@@ -12,8 +11,7 @@
   gap: 10px;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  max-width: 1280px;
+  width: 90%;
   padding: 16px;
   box-sizing: border-box;
 }
@@ -82,4 +80,10 @@
 /* Logged state styles (if needed for future) */
 .header--logged .header__title {
   /* Current styling remains the same */
+}
+
+@media (max-width: 768px) {
+  .login-page__header .header__inner {
+    padding: 24px 16px 0;
+  }
 }

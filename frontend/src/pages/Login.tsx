@@ -2,7 +2,9 @@ import { useState } from "react";
 import "../components/headerComponent.css";
 import "../components/inputComponent.css";
 import "../components/buttonComponent.css";
+import "../components/footerComponent.css";
 import "./Login.css";
+import { NavLink } from "react-router";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -10,17 +12,6 @@ export default function Login() {
 
   return (
     <div className="login-page">
-      <header className="header login-page__header">
-        <div className="header__inner">
-          <h1 className="header__title">DataShare</h1>
-          <div className="header__actions">
-            <button type="button" className="header__action-button">
-              Se connecter
-            </button>
-          </div>
-        </div>
-      </header>
-
       <main className="login-page__content">
         <section className="login-page__card">
           <h2 className="login-page__title">Connexion</h2>
@@ -55,12 +46,12 @@ export default function Login() {
             </div>
 
             <div className="login-page__actions">
-              <button
-                type="button"
+              <NavLink
+                to="/register"
                 className="button button--secondary button--small"
               >
                 Créer un compte
-              </button>
+              </NavLink>
               <button
                 type="submit"
                 className="button button--primary button--small"
@@ -71,10 +62,6 @@ export default function Login() {
           </form>
         </section>
       </main>
-
-      <footer className="login-page__footer">
-        <p className="login-page__footer-text">Copyright DataShare © 2025</p>
-      </footer>
     </div>
   );
 }

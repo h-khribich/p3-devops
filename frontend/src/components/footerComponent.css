@@ -1,0 +1,30 @@
+/* Footer positioning */
+.footer {
+  padding: 10px 92px 24px;
+  width: calc(100% - 64px);
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.footer__text {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    padding: 16px 16px 24px;
+  }
+
+  .footer__text {
+    color: #000000;
+  }
+}
