@@ -25,8 +25,8 @@ model File {
    id    Int     @id @default(autoincrement())
    userId Int
    user User @relation(fields: [userId], references: [id])
-   email String  @unique
    filename String
+   s3Key String @unique
    type String
    size Int
    sendDate DateTime @default(now())
