@@ -4,13 +4,15 @@ import "./index.css";
 import App from "./App.tsx";
 import Login from "./pages/Login.tsx";
 import Register from "./pages/Register.tsx";
+import LandingPage from "./pages/LandingPage.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     Component: App,
     children: [
-      { index: true, Component: Login },
+      { index: true, Component: LandingPage },
+      { path: "welcome", Component: LandingPage },
       { path: "login", Component: Login },
       { path: "register", Component: Register },
       {

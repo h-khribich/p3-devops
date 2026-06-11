@@ -1,0 +1,39 @@
+.landing-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-grow: 1;
+  gap: 10px;
+}
+
+.landing-page__title {
+  font-family: "DM Sans", sans-serif;
+  font-weight: 200;
+}
+
+.landing-page__icon {
+  border: 3px solid transparent;
+  border-radius: 50%;
+  transition: 0.3s ease;
+}
+
+.landing-page__icon:hover {
+  border: 3px solid rgb(205, 91, 16);
+  box-shadow: 0 0 0 15px rgba(205, 91, 16, 0.2);
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .landing-page__title {
+    width: 85%;
+    font-size: 30px;
+    line-height: 32px;
+  }
+
+  .landing-page__icon {
+    width: 120px;
+    height: 120px;
+  }
+}

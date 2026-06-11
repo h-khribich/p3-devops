@@ -1,8 +1,8 @@
 import { useState } from "react";
-import "../components/inputComponent.css";
-import "../components/buttonComponent.css";
-import "./Register.css";
 import { NavLink } from "react-router";
+import "../style/components/inputComponent.css";
+import "../style/components/buttonComponent.css";
+import "../style/pages/Register.css";
 
 export default function Register() {
   const [email, setEmail] = useState("");

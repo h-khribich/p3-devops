@@ -48,12 +48,13 @@
   line-height: 16px;
   font-weight: 400;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: 0.3s ease;
   text-decoration: none;
 }
 
 .header__action-button:hover {
   background: #1a1a1a;
+  transform: scale(1.05);
 }
 
 .header__action-icon {

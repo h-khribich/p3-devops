@@ -9,8 +9,12 @@
   border: none;
   overflow: hidden;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: 0.3s ease;
   text-decoration: none;
+}
+
+.button:hover {
+  transform: scale(1.02);
 }
 
 /* Size Variants */
