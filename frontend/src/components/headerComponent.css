@@ -49,6 +49,7 @@
   font-weight: 400;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  text-decoration: none;
 }
 
 .header__action-button:hover {
@@ -68,11 +69,6 @@
   width: 100%;
 }
 
-.header--mobile .header__inner {
-  max-width: none;
-  width: 100%;
-}
-
 .header--mobile .header__actions {
   gap: 8px;
 }
@@ -83,7 +79,17 @@
 }
 
 @media (max-width: 768px) {
+  .header {
+    width: 100%;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .header__inner {
+    width: 100%;
+  }
+
   .login-page__header .header__inner {
-    padding: 24px 16px 0;
+    padding: 24px 0 0;
   }
 }

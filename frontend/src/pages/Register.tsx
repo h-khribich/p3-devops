@@ -1,8 +1,8 @@
 import { useState } from "react";
-import "../components/headerComponent.css";
 import "../components/inputComponent.css";
 import "../components/buttonComponent.css";
 import "./Register.css";
+import { NavLink } from "react-router";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -11,17 +11,6 @@ export default function Register() {
 
   return (
     <div className="register-page">
-      <header className="header register-page__header">
-        <div className="header__inner">
-          <h1 className="header__title">DataShare</h1>
-          <div className="header__actions">
-            <button type="button" className="header__action-button">
-              Se connecter
-            </button>
-          </div>
-        </div>
-      </header>
-
       <main className="register-page__content">
         <section className="register-page__card">
           <h2 className="register-page__title">Créer un compte</h2>
@@ -75,12 +64,12 @@ export default function Register() {
             </div>
 
             <div className="register-page__actions">
-              <button
-                type="button"
+              <NavLink
+                to="/login"
                 className="button button--tertiary button--small"
               >
                 J'ai déjà un compte
-              </button>
+              </NavLink>
               <button
                 type="submit"
                 className="button button--primary button--small"
@@ -91,12 +80,6 @@ export default function Register() {
           </form>
         </section>
       </main>
-
-      <footer className="register-page__footer">
-        <p className="register-page__footer-text">
-          Copyright DataShare © 2025
-        </p>
-      </footer>
     </div>
   );
 }

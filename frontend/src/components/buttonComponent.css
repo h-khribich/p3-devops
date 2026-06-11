@@ -10,6 +10,7 @@
   overflow: hidden;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  text-decoration: none;
 }
 
 /* Size Variants */
@@ -41,7 +42,6 @@
 /* Secondary Variant */
 .button--secondary {
   background: transparent;
-  border: 1px solid #ffa569;
   color: #e27f29;
   font-family: "DM Sans", sans-serif;
   font-weight: 400;

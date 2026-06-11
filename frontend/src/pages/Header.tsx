@@ -1,12 +1,14 @@
+import { NavLink } from "react-router";
+
 export default function Header() {
   return (
     <header className="header">
       <div className="header__inner">
         <h1 className="header__title">DataShare</h1>
         <div className="header__actions">
-          <button type="button" className="header__action-button">
+          <NavLink to="/login" className="header__action-button">
             Se connecter
-          </button>
+          </NavLink>
         </div>
       </div>
     </header>
