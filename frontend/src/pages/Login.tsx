@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { NavLink } from "react-router";
-import "../style/components/headerComponent.css";
 import "../style/components/inputComponent.css";
 import "../style/components/buttonComponent.css";
-import "../style/components/footerComponent.css";
 import "../style/pages/Login.css";
 
 export default function Login() {

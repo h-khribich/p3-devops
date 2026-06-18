@@ -87,4 +87,8 @@
     max-width: 393px;
     padding: 24px;
   }
+
+  .login-page__title {
+    font-size: 24px;
+  }
 }
