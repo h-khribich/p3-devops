@@ -5,11 +5,14 @@ import "../style/pages/Upload.css";
 import uploadIcon from "../assets/upload.svg";
 
 const MAX_FILE_SIZE = 1024 * 1024 * 1024; // 1 Go en octets
+const ALLOWED_FILE_TYPES = ["jpg", "jpeg", "png", "pdf", "doc"];
 
 export default function Upload() {
   const [duration, setDuration] = useState("Une semaine");
   const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [fileError, setFileError] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -17,11 +20,36 @@ export default function Upload() {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
+  const isAllowed = (f: File): { ok: boolean; message: string | null } => {
+    const ext = f.name.split(".").pop()?.toLowerCase() ?? "";
+    if (!ALLOWED_FILE_TYPES.includes(ext)) {
+      return {
+        ok: false,
+        message: `Type non autorisé — extensions autorisées : ${ALLOWED_FILE_TYPES.join(", ")}`,
+      };
     }
+    if (f.size > MAX_FILE_SIZE) {
+      return {
+        ok: false,
+        message: "Fichier trop volumineux — taille maximale : 1 Go",
+      };
+    }
+    return { ok: true, message: null };
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.currentTarget;
+    const selectedFile = input.files?.[0];
+    if (!selectedFile) return;
+    const res = isAllowed(selectedFile);
+    if (!res.ok) {
+      input.value = "";
+      setFile(null);
+      setFileError(res.message || "");
+      return;
+    }
+    setFile(selectedFile);
+    setFileError("");
   };
 
   const formatFileSize = (bytes: number) => {
@@ -39,7 +67,7 @@ export default function Upload() {
   };
 
   const truncateFileName = (name: string) => {
-    if (name.length > 20) {
+    if (name.length > 30) {
       return name.substring(0, 18) + "...";
     }
     return name;
@@ -57,6 +85,7 @@ export default function Upload() {
             <div className="upload-page__file-section">
               <input
                 type="file"
+                accept=".jpg,.jpeg,.png,.pdf,.doc"
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 style={{ display: "none" }}
@@ -123,6 +152,7 @@ export default function Upload() {
                   )}
                 </>
               )}
+              {fileError && <p className="file-error-message">{fileError}</p>}
             </div>
 
             <div className="input">
@@ -134,9 +164,20 @@ export default function Upload() {
                 type="password"
                 placeholder="Optionnel"
                 value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={(event) => {
+                  const v = event.target.value;
+                  setPassword(v);
+                  setPasswordError(
+                    v && v.length > 0 && v.length < 7
+                      ? "Le mot de passe doit contenir au moins 7 caractères."
+                      : "",
+                  );
+                }}
                 className="input__control"
               />
+              {passwordError && (
+                <p className="file-error-message">{passwordError}</p>
+              )}
             </div>
 
             <div className="input">

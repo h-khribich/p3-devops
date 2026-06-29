@@ -105,6 +105,7 @@ landing-page__icon {
 .upload-page__file-section {
   display: flex;
   justify-content: flex-end;
+  flex-direction: column;
 }
 
 .file-preview {
@@ -130,13 +131,14 @@ landing-page__icon {
 }
 
 .file-preview__name {
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 500;
   color: #111;
+  font-weight: 700;
 }
 
 .file-preview__size {
-  font-size: 12px;
+  font-size: 14px;
   color: #666;
   margin-top: 2px;
 }
@@ -162,8 +164,8 @@ landing-page__icon {
 
 .file-error-message {
   color: #ef4444;
-  font-size: 14px;
-  margin-top: -16px;
+  font-size: 15px;
+  margin-top: 16px;
   margin-bottom: 24px;
 }
 
