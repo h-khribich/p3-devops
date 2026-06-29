@@ -106,6 +106,7 @@ landing-page__icon {
   display: flex;
   justify-content: flex-end;
   flex-direction: column;
+  align-items: end;
 }
 
 .file-preview {
@@ -128,13 +129,19 @@ landing-page__icon {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  min-width: 0;
 }
 
 .file-preview__name {
+  display: block;
+  max-width: 100%;
   font-size: 17px;
   font-weight: 500;
   color: #111;
-  font-weight: 700;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .file-preview__size {
@@ -144,7 +151,7 @@ landing-page__icon {
 }
 
 .button--outline-orange {
-  background-color: transparent;
+  background-color: #fff6f0;
   border: 1px solid #f29c6b;
   color: #e57d47;
   padding: 6px 16px;
@@ -152,6 +159,7 @@ landing-page__icon {
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  width: fit-content;
 }
 
 .button--outline-orange:hover {
@@ -167,6 +175,89 @@ landing-page__icon {
   font-size: 15px;
   margin-top: 16px;
   margin-bottom: 24px;
+}
+
+.upload-success {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+}
+
+.upload-success__file-preview {
+  margin-bottom: 8px;
+}
+
+.upload-success__message {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #222;
+  font-weight: 500;
+  font-family: "DM Sans", sans-serif;
+}
+
+.upload-success__link {
+  display: block;
+  padding: 10px 16px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  color: #f07d2a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  line-height: 25px;
+  font-weight: 500;
+}
+
+.upload-success__link:hover {
+  text-decoration: underline;
+}
+
+.upload-success__copy,
+.upload-success__reset {
+  align-self: center;
+  font-size: 16px;
+}
+
+.upload-success__copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-inline: 14px;
+  font-size: 17px;
+}
+
+.upload-success__copy svg {
+  flex: 0 0 auto;
+}
+
+.upload-page__alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid #b6c8f6;
+  border-radius: 8px;
+  background: #dfe8ff;
+  color: #27408b;
+  font-size: 15px;
+  font-family: "DM Sans", sans-serif;
+}
+
+.upload-page__alert-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #27408b;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1;
+  flex: 0 0 auto;
 }
 
 .button--primary:disabled {

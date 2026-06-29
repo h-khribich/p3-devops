@@ -6,6 +6,7 @@ import Login from "./pages/Login.tsx";
 import Register from "./pages/Register.tsx";
 import LandingPage from "./pages/LandingPage.tsx";
 import Upload from "./pages/Upload.tsx";
+import Download from "./pages/Download.tsx";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
       { path: "login", Component: Login },
       { path: "register", Component: Register },
       { path: "upload", Component: Upload },
+      { path: "download/:token", Component: Download },
       {
         path: "*",
         Component: () => (

@@ -22,10 +22,11 @@ model User {
 
 model File {
    id    Int     @id @default(autoincrement())
-   userId Int
-   user User @relation(fields: [userId], references: [id])
+  userId Int?
+  user User? @relation(fields: [userId], references: [id])
    filename String
    s3Key String @unique
+  downloadToken String @unique
    type String
    size Int
    sendDate DateTime @default(now())
