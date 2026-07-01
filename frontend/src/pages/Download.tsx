@@ -73,8 +73,15 @@ export default function Download() {
     );
   }, [metadata]);
 
-  const expiryLabel = useMemo(() => {
-    if (!metadata || loadedAt === 0) return "";
+  const alertMessage = useMemo(() => {
+    if (!metadata) return "";
+
+    if (metadata.expired) {
+      return "Ce fichier a expiré et n’est plus disponible au téléchargement.";
+    }
+
+    if (loadedAt === 0) return "";
+
     const daysLeft = Math.max(
       1,
       Math.ceil(
@@ -82,7 +89,10 @@ export default function Download() {
           (1000 * 60 * 60 * 24),
       ),
     );
-    return daysLeft === 1 ? "1 jour" : `${daysLeft} jours`;
+
+    return daysLeft === 1
+      ? "Ce fichier expirera demain."
+      : `Ce fichier expirera dans ${daysLeft} jours.`;
   }, [loadedAt, metadata]);
 
   useEffect(() => {
@@ -178,9 +188,9 @@ export default function Download() {
   };
 
   return (
-    <div className="upload-page">
-      <main className="upload-page__content">
-        <section className="upload-page__card">
+    <div className="upload-page download-page">
+      <main className="upload-page__content download-page__content">
+        <section className="upload-page__card download-page__card">
           <h2 className="upload-page__title">Télécharger un fichier</h2>
 
           {isLoading ? (
@@ -222,9 +232,11 @@ export default function Download() {
                 </div>
               </div>
 
-              <div className="upload-page__alert">
+              <div
+                className={`upload-page__alert ${metadata.expired ? "upload-page__alert--expired" : ""}`}
+              >
                 <span className="upload-page__alert-icon">i</span>
-                <span>Ce fichier expirera dans {expiryLabel}.</span>
+                <span>{alertMessage}</span>
               </div>
 
               {metadata.passwordRequired && (
@@ -256,11 +268,17 @@ export default function Download() {
                 type="submit"
                 className="button button--primary"
                 disabled={
-                  isDownloading || (metadata.passwordRequired && !password)
+                  isDownloading ||
+                  metadata.expired ||
+                  (metadata.passwordRequired && !password)
                 }
               >
                 <DownloadIcon />
-                {isDownloading ? "Téléchargement..." : "Télécharger"}
+                {metadata.expired
+                  ? "Fichier expiré"
+                  : isDownloading
+                    ? "Téléchargement..."
+                    : "Télécharger"}
               </button>
             </form>
           ) : null}

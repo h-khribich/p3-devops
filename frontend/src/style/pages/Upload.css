@@ -273,18 +273,22 @@ landing-page__icon {
 
 /* Responsive adjustments for mobile */
 @media (max-width: 768px) {
-  .upload-page__content {
+  .upload-page__content:not(.download-page__content) {
     padding: 100px 0 0 0;
   }
 
-  .upload-page {
+  .upload-page:not(.download-page) {
     justify-content: flex-end;
   }
 
-  .upload-page__card {
+  .upload-page__card:not(.download-page__card) {
     min-width: 100%;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+  }
+
+  .download-page__card {
+    width: 85%;
   }
 
   .upload-page__title {
