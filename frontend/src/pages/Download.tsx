@@ -1,10 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { useParams, useSearchParams } from "react-router";
+import {
+  API_BASE_URL,
+  formatFileSize,
+  getDaysLeft,
+  readApiError,
+  triggerBrowserDownload,
+} from "./pageHelpers.ts";
 import "../style/components/inputComponent.css";
 import "../style/components/buttonComponent.css";
 import "../style/pages/Upload.css";
-
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
 type DownloadMetadata = {
   filename: string;
@@ -49,8 +54,9 @@ function DownloadIcon() {
 
 export default function Download() {
   const { token = "" } = useParams();
+  const [searchParams] = useSearchParams();
   const [metadata, setMetadata] = useState<DownloadMetadata | null>(null);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(searchParams.get("password") ?? "");
   const [passwordError, setPasswordError] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -58,19 +64,11 @@ export default function Download() {
   const [loadedAt, setLoadedAt] = useState(0);
 
   const fileSize = useMemo(() => {
-    if (!metadata) return "";
-    const bytes = metadata.size;
-    if (bytes === 0) return "0 Octet";
-    const k = 1024;
-    const sizes = ["Octets", "Ko", "Mo", "Go"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return (
-      parseFloat((bytes / Math.pow(k, i)).toFixed(1))
-        .toString()
-        .replace(".", ",") +
-      " " +
-      sizes[i]
-    );
+    if (!metadata) {
+      return "";
+    }
+
+    return formatFileSize(metadata.size);
   }, [metadata]);
 
   const alertMessage = useMemo(() => {
@@ -82,13 +80,7 @@ export default function Download() {
 
     if (loadedAt === 0) return "";
 
-    const daysLeft = Math.max(
-      1,
-      Math.ceil(
-        (new Date(metadata.expiresAt).getTime() - loadedAt) /
-          (1000 * 60 * 60 * 24),
-      ),
-    );
+    const daysLeft = getDaysLeft(metadata.expiresAt, loadedAt);
 
     return daysLeft === 1
       ? "Ce fichier expirera demain."
@@ -107,10 +99,9 @@ export default function Download() {
         const response = await fetch(`${API_BASE_URL}/downloads/${token}`);
 
         if (!response.ok) {
-          const payload = (await response.json().catch(() => null)) as {
-            message?: string;
-          } | null;
-          throw new Error(payload?.message || "Lien introuvable ou expiré.");
+          throw new Error(
+            await readApiError(response, "Lien introuvable ou expiré."),
+          );
         }
 
         const payload = (await response.json()) as DownloadMetadata;
@@ -130,7 +121,8 @@ export default function Download() {
     void loadMetadata();
   }, [token]);
 
-  const handleDownload = async (event: React.FormEvent<HTMLFormElement>) => {
+  // Download action: validate the form, call the API, then save the blob locally.
+  const handleDownload = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!token) {
@@ -161,21 +153,13 @@ export default function Download() {
       });
 
       if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as {
-          message?: string;
-        } | null;
-        throw new Error(payload?.message || "Téléchargement impossible.");
+        throw new Error(
+          await readApiError(response, "Téléchargement impossible."),
+        );
       }
 
       const blob = await response.blob();
-      const objectUrl = window.URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = objectUrl;
-      anchor.download = metadata?.filename ?? "download";
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      window.URL.revokeObjectURL(objectUrl);
+      triggerBrowserDownload(blob, metadata?.filename ?? "download");
     } catch (requestError) {
       setError(
         requestError instanceof Error
@@ -250,7 +234,7 @@ export default function Download() {
                     placeholder="Saisissez le mot de passe..."
                     value={password}
                     onChange={(event) => {
-                      setPassword(event.target.value);
+                      setPassword(event.currentTarget.value);
                       setPasswordError("");
                       setError("");
                     }}

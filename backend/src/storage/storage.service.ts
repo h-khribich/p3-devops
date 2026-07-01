@@ -2,8 +2,8 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  GoneException,
   NotFoundException,
+  GoneException,
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -42,6 +42,19 @@ type DownloadMetadata = {
   expiresAt: string;
   passwordRequired: boolean;
   expired: boolean;
+};
+
+type UserFileStatus = 'all' | 'active' | 'expired';
+
+type UserFileItem = {
+  id: number;
+  filename: string;
+  size: number;
+  sendDate: string;
+  expireDate: string;
+  state: 'active' | 'expired';
+  downloadPath: string;
+  passwordRequired: boolean;
 };
 
 @Injectable()
@@ -87,6 +100,22 @@ export class StorageService implements OnModuleInit, OnModuleDestroy {
   }
 
   async createAnonymousUpload(file: UploadFile, input: AnonymousUploadInput) {
+    return this.createUploadForUser(null, file, input);
+  }
+
+  async createUserUpload(
+    userId: number,
+    file: UploadFile,
+    input: AnonymousUploadInput,
+  ) {
+    return this.createUploadForUser(userId, file, input);
+  }
+
+  private async createUploadForUser(
+    userId: number | null,
+    file: UploadFile,
+    input: AnonymousUploadInput,
+  ) {
     this.validateFile(file);
 
     const password = input.password?.trim();
@@ -132,7 +161,7 @@ export class StorageService implements OnModuleInit, OnModuleDestroy {
     try {
       createdFile = await this.prisma.file.create({
         data: {
-          userId: null,
+          userId,
           filename: file.originalname,
           s3Key,
           downloadToken,
@@ -173,7 +202,35 @@ export class StorageService implements OnModuleInit, OnModuleDestroy {
   }
 
   async getDownloadMetadata(downloadToken: string): Promise<DownloadMetadata> {
-    const file = await this.findFileByToken(downloadToken);
+    const file = await this.prisma.file.findUnique({
+      where: { downloadToken },
+    });
+
+    if (!file) {
+      throw new NotFoundException('Fichier introuvable.');
+    }
+
+    if (file.status === 'expired') {
+      return {
+        filename: file.filename,
+        size: file.size,
+        expiresAt: file.expireDate.toISOString(),
+        passwordRequired: Boolean(file.password),
+        expired: true,
+      };
+    }
+
+    if (file.expireDate.getTime() <= Date.now()) {
+      await this.expireFile(file.id, file.s3Key);
+
+      return {
+        filename: file.filename,
+        size: file.size,
+        expiresAt: file.expireDate.toISOString(),
+        passwordRequired: Boolean(file.password),
+        expired: true,
+      };
+    }
 
     return {
       filename: file.filename,
@@ -210,6 +267,73 @@ export class StorageService implements OnModuleInit, OnModuleDestroy {
       mimetype: file.type,
       stream: body as Readable,
     };
+  }
+
+  async listUserFiles(
+    userId: number,
+    status: UserFileStatus = 'active',
+  ): Promise<UserFileItem[]> {
+    const files = await this.prisma.file.findMany({
+      where: { userId },
+      orderBy: { sendDate: 'desc' },
+    });
+
+    const mappedFiles: UserFileItem[] = files.map((file) => {
+      const isExpired =
+        file.status === 'expired' || file.expireDate.getTime() <= Date.now();
+      const state: UserFileItem['state'] = isExpired ? 'expired' : 'active';
+
+      return {
+        id: file.id,
+        filename: file.filename,
+        size: file.size,
+        sendDate: file.sendDate.toISOString(),
+        expireDate: file.expireDate.toISOString(),
+        state,
+        downloadPath: `/download/${file.downloadToken}`,
+        passwordRequired: Boolean(file.password),
+      };
+    });
+
+    if (status === 'all') {
+      return mappedFiles;
+    }
+
+    return mappedFiles.filter((file) => file.state === status);
+  }
+
+  async deleteUserFile(userId: number, fileId: number, password?: string) {
+    const file = await this.prisma.file.findFirst({
+      where: {
+        id: fileId,
+        userId,
+      },
+    });
+
+    if (!file) {
+      throw new NotFoundException('Fichier introuvable.');
+    }
+
+    if (file.password && file.password !== (password ?? '').trim()) {
+      throw new UnauthorizedException('Mot de passe invalide.');
+    }
+
+    try {
+      await this.s3Client.send(
+        new DeleteObjectCommand({
+          Bucket: this.bucketName,
+          Key: file.s3Key,
+        }),
+      );
+    } catch {
+      // Best effort: metadata deletion should still proceed.
+    }
+
+    await this.prisma.file.delete({
+      where: { id: file.id },
+    });
+
+    return { success: true };
   }
 
   async cleanupExpiredFiles() {

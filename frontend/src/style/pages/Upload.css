@@ -247,6 +247,16 @@ landing-page__icon {
   font-family: "DM Sans", sans-serif;
 }
 
+.upload-page__alert--expired {
+  border-color: #f0b4b4;
+  background: #fde8e8;
+  color: #9c3333;
+}
+
+.upload-page__alert--expired .upload-page__alert-icon {
+  border-color: #9c3333;
+}
+
 .upload-page__alert-icon {
   display: inline-flex;
   align-items: center;

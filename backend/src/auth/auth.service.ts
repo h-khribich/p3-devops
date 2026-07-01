@@ -9,72 +9,79 @@ import { LoginUserDto } from './dto/login-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 
+type AuthenticatedUser = {
+  id: number;
+  email: string;
+};
+
+type AuthResponse = {
+  access_token: string;
+  user: AuthenticatedUser;
+};
+
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService,
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
   ) {}
 
-  // US03 : Création de compte
   async register(createUserDto: CreateUserDto) {
-    // 1. Vérifier si l'email existe déjà
+    const email = this.normalizeEmail(createUserDto.email);
+
     const existingUser = await this.prisma.user.findUnique({
-      where: { email: createUserDto.email },
+      where: { email },
     });
 
     if (existingUser) {
       throw new ConflictException('Cet email est déjà utilisé.');
     }
 
-    // 2. Hacher le mot de passe (Sécurité US03)
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(
-      createUserDto.password,
-      saltRounds,
-    );
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
-    // 3. Créer l'utilisateur en BDD
     const newUser = await this.prisma.user.create({
       data: {
-        email: createUserDto.email,
+        email,
         password: hashedPassword,
       },
     });
 
-    // On retourne l'user sans le mot de passe
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...result } = newUser;
     return result;
   }
 
-  // US04 : Connexion utilisateur
-  async login(loginUserDto: LoginUserDto) {
-    // 1. Trouver l'utilisateur par email
+  async login(loginUserDto: LoginUserDto): Promise<AuthResponse> {
+    const email = this.normalizeEmail(loginUserDto.email);
+
     const user = await this.prisma.user.findUnique({
-      where: { email: loginUserDto.email },
+      where: { email },
     });
 
-    // 2. Vérifier si l'utilisateur existe et si le mot de passe correspond
-    if (!user) {
+    if (
+      !user ||
+      !(await bcrypt.compare(loginUserDto.password, user.password))
+    ) {
       throw new UnauthorizedException('Identifiants invalides.');
     }
-
-    const isPasswordValid = await bcrypt.compare(
-      loginUserDto.password,
-      user.password,
-    );
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Identifiants invalides.');
-    }
-
-    // 3. Générer le token JWT (US04)
-    const payload = { sub: user.id, email: user.email };
 
     return {
-      access_token: this.jwtService.sign(payload),
-      user: { id: user.id, email: user.email }, // Optionnel : renvoyer les infos de base
+      access_token: this.jwtService.sign({ sub: user.id, email: user.email }),
+      user: this.toAuthenticatedUser(user),
+    };
+  }
+
+  private normalizeEmail(email: string) {
+    return email.trim().toLowerCase();
+  }
+
+  private toAuthenticatedUser(user: {
+    id: number;
+    email: string;
+  }): AuthenticatedUser {
+    return {
+      id: user.id,
+      email: user.email,
     };
   }
 }

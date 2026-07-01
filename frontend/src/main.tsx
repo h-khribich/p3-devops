@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router";
+import { Navigate, createBrowserRouter, RouterProvider } from "react-router";
 import "./index.css";
 import App from "./App.tsx";
 import Login from "./pages/Login.tsx";
@@ -7,6 +7,21 @@ import Register from "./pages/Register.tsx";
 import LandingPage from "./pages/LandingPage.tsx";
 import Upload from "./pages/Upload.tsx";
 import Download from "./pages/Download.tsx";
+import MySpace from "./pages/MySpace.tsx";
+import { isAuthenticated } from "./auth.ts";
+import DashboardLayout from "./layouts/DashboardLayout.tsx";
+
+function ProtectedMySpace() {
+  return isAuthenticated() ? <MySpace /> : <Navigate to="/login" replace />;
+}
+
+function ProtectedDashboardLayout() {
+  return isAuthenticated() ? (
+    <DashboardLayout />
+  ) : (
+    <Navigate to="/login" replace />
+  );
+}
 
 const router = createBrowserRouter([
   {
@@ -28,6 +43,11 @@ const router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    path: "/",
+    Component: ProtectedDashboardLayout,
+    children: [{ path: "my-space", Component: ProtectedMySpace }],
   },
 ]);
 

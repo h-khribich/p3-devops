@@ -1,4 +1,12 @@
-import { useMemo, useRef, useState } from "react";
+import { type ChangeEvent, type FormEvent, useRef, useState } from "react";
+import { getAccessToken } from "../auth";
+import {
+  API_BASE_URL,
+  formatFileSize,
+  getDownloadToken,
+  getDownloadUrl,
+  readApiError,
+} from "./pageHelpers.ts";
 import "../style/components/inputComponent.css";
 import "../style/components/buttonComponent.css";
 import "../style/pages/Upload.css";
@@ -6,7 +14,6 @@ import uploadIcon from "../assets/upload.svg";
 
 const MAX_FILE_SIZE = 1024 * 1024 * 1024; // 1 Go en octets
 const ALLOWED_FILE_TYPES = ["jpg", "jpeg", "png", "pdf", "doc"];
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 const PUBLIC_LINK_HOST =
   import.meta.env.VITE_PUBLIC_LINK_HOST ?? "datashare.fr";
 
@@ -45,6 +52,18 @@ function CopyIcon() {
   );
 }
 
+function getDurationLabel(duration: string) {
+  if (duration === "3") {
+    return "3 jours";
+  }
+
+  if (duration === "1") {
+    return "une journée";
+  }
+
+  return "une semaine";
+}
+
 export default function Upload() {
   const [duration, setDuration] = useState("7");
   const [password, setPassword] = useState("");
@@ -58,23 +77,14 @@ export default function Upload() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const durationLabel = useMemo(() => {
-    switch (duration) {
-      case "3":
-        return "3 jours";
-      case "1":
-        return "une journée";
-      default:
-        return "une semaine";
-    }
-  }, [duration]);
+  const durationLabel = getDurationLabel(duration);
 
   const downloadUrl = uploadResult
-    ? new URL(uploadResult.downloadPath, window.location.origin).toString()
+    ? getDownloadUrl(uploadResult.downloadPath)
     : "";
 
   const downloadToken = uploadResult
-    ? (uploadResult.downloadPath.split("/").filter(Boolean).pop() ?? "")
+    ? getDownloadToken(uploadResult.downloadPath)
     : "";
 
   const displayLink = downloadToken
@@ -85,6 +95,7 @@ export default function Upload() {
     fileInputRef.current?.click();
   };
 
+  // Small local validation so the user gets fast feedback before the upload starts.
   const isAllowed = (f: File): { ok: boolean; message: string | null } => {
     const ext = f.name.split(".").pop()?.toLowerCase() ?? "";
     if (!ALLOWED_FILE_TYPES.includes(ext)) {
@@ -102,7 +113,7 @@ export default function Upload() {
     return { ok: true, message: null };
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const input = event.currentTarget;
     const selectedFile = input.files?.[0];
     if (!selectedFile) return;
@@ -118,20 +129,6 @@ export default function Upload() {
     setUploadError("");
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "0 Octet";
-    const k = 1024;
-    const sizes = ["Octets", "Ko", "Mo", "Go"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return (
-      parseFloat((bytes / Math.pow(k, i)).toFixed(1))
-        .toString()
-        .replace(".", ",") +
-      " " +
-      sizes[i]
-    );
-  };
-
   const isFileTooLarge = file ? file.size > MAX_FILE_SIZE : false;
 
   const handleCopyLink = async () => {
@@ -141,7 +138,8 @@ export default function Upload() {
     setIsCopied(true);
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  // The upload submit stays easy to follow: validate, build FormData, call the API.
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!file) {
@@ -166,20 +164,22 @@ export default function Upload() {
     setUploadError("");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/uploads/anonymous`, {
+      const token = getAccessToken();
+      const endpoint = token ? "/uploads/me" : "/uploads/anonymous";
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: "POST",
+        headers: token
+          ? {
+              Authorization: `Bearer ${token}`,
+            }
+          : undefined,
         body: formData,
       });
 
       if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as {
-          message?: string | string[];
-        } | null;
-        const message = Array.isArray(payload?.message)
-          ? payload?.message[0]
-          : payload?.message;
-
-        throw new Error(message || "Le téléversement a échoué.");
+        throw new Error(
+          await readApiError(response, "Le téléversement a échoué."),
+        );
       }
 
       const payload = (await response.json()) as UploadSuccess;
@@ -297,7 +297,7 @@ export default function Upload() {
                   placeholder="Optionnel"
                   value={password}
                   onChange={(event) => {
-                    const v = event.target.value;
+                    const v = event.currentTarget.value;
                     setPassword(v);
                     setPasswordError(
                       v && v.length > 0 && v.length < 6
@@ -320,7 +320,7 @@ export default function Upload() {
                 <select
                   id="duration"
                   value={duration}
-                  onChange={(event) => setDuration(event.target.value)}
+                  onChange={(event) => setDuration(event.currentTarget.value)}
                   className="input__control"
                 >
                   <option value="7">Une semaine</option>
