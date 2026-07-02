@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, NavLink } from "react-router";
 import { clearAccessToken, getAccessToken } from "../auth";
 import { API_BASE_URL, getDaysLeft, readApiError } from "./pageHelpers.ts";
 import "../style/components/buttonComponent.css";
@@ -44,6 +44,7 @@ export default function MySpace() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   const token = getAccessToken();
@@ -189,8 +190,15 @@ export default function MySpace() {
 
   return (
     <main className="myspace-dashboard">
-      <aside className="myspace-sidebar">
-        <div className="myspace-sidebar__logo">DataShare</div>
+      <aside className={`myspace-sidebar ${isSidebarOpen ? "is-open" : ""}`}>
+        <i
+          id="sidebar-closeBtn"
+          className="fa-solid fa-x"
+          onClick={() => setIsSidebarOpen(false)}
+        ></i>
+        <NavLink to="/" className="myspace-sidebar__logo">
+          DataShare
+        </NavLink>
         <nav className="myspace-sidebar__nav">
           <button type="button" className="myspace-sidebar__nav-item is-active">
             Mes fichiers
@@ -201,6 +209,21 @@ export default function MySpace() {
 
       <section className="myspace-workspace">
         <header className="myspace-toolbar">
+          <button
+            type="button"
+            id="burger-menu__mobile"
+            onClick={() => setIsSidebarOpen(true)}
+            aria-label="Ouvrir le menu"
+          >
+            <i className="fa-solid fa-bars"></i>
+          </button>
+          <button
+            type="button"
+            id="user__mobile"
+            aria-label="Profil utilisateur"
+          >
+            <i className="fa-solid fa-user"></i>
+          </button>
           <Link to="/upload" className="myspace-toolbar__button">
             Ajouter des fichiers
           </Link>
@@ -281,7 +304,7 @@ export default function MySpace() {
                   </div>
 
                   <div className="myspace-item__actions">
-                    {file.passwordRequired && (
+                    {file.state === "active" && file.passwordRequired && (
                       <span
                         className="myspace-item__lock"
                         title="Fichier protégé par mot de passe"
@@ -310,25 +333,29 @@ export default function MySpace() {
                         </svg>
                       </span>
                     )}
-                    <button
-                      type="button"
-                      className="myspace-action myspace-action--danger"
-                      onClick={() => void handleDelete(file.id)}
-                      disabled={deletingId === file.id}
-                    >
-                      <i className="fa-regular fa-trash-can"></i>
-                      {deletingId === file.id ? "Suppression..." : "Supprimer"}
-                    </button>
 
                     {file.state === "active" ? (
-                      <button
-                        type="button"
-                        className="myspace-action"
-                        onClick={() => handleAccess(file)}
-                      >
-                        Accéder
-                        <i className="fa-solid fa-arrow-right"></i>
-                      </button>
+                      <>
+                        <button
+                          type="button"
+                          className="myspace-action myspace-action--danger"
+                          onClick={() => void handleDelete(file.id)}
+                          disabled={deletingId === file.id}
+                        >
+                          <i className="fa-regular fa-trash-can"></i>
+                          {deletingId === file.id
+                            ? "Suppression..."
+                            : "Supprimer"}
+                        </button>
+                        <button
+                          type="button"
+                          className="myspace-action"
+                          onClick={() => handleAccess(file)}
+                        >
+                          Accéder
+                          <i className="fa-solid fa-arrow-right"></i>
+                        </button>
+                      </>
                     ) : (
                       <span className="myspace-item__expired-note">
                         Ce fichier a expiré, il n'est plus stocké chez nous
