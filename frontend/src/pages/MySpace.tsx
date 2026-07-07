@@ -45,6 +45,9 @@ export default function MySpace() {
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activeActionsMenuId, setActiveActionsMenuId] = useState<number | null>(
+    null,
+  );
   const navigate = useNavigate();
 
   const token = getAccessToken();
@@ -66,6 +69,13 @@ export default function MySpace() {
           },
         );
 
+        if (response.status === 401) {
+          // Token invalide ou expiré, déconnexion automatique
+          clearAccessToken();
+          navigate("/login");
+          return;
+        }
+
         if (!response.ok) {
           throw new Error(
             await readApiError(response, "Impossible de charger vos fichiers."),
@@ -86,7 +96,7 @@ export default function MySpace() {
     };
 
     void loadFiles();
-  }, [filter, token]);
+  }, [filter, token, navigate]);
 
   const handleDelete = async (fileId: number) => {
     if (!token) return;
@@ -122,6 +132,13 @@ export default function MySpace() {
         },
         body: JSON.stringify({ password }),
       });
+
+      if (response.status === 401) {
+        // Token expiré lors de la tentative de suppression
+        clearAccessToken();
+        navigate("/login");
+        return;
+      }
 
       if (!response.ok) {
         throw new Error(
@@ -191,14 +208,16 @@ export default function MySpace() {
   return (
     <main className="myspace-dashboard">
       <aside className={`myspace-sidebar ${isSidebarOpen ? "is-open" : ""}`}>
-        <i
-          id="sidebar-closeBtn"
-          className="fa-solid fa-x"
-          onClick={() => setIsSidebarOpen(false)}
-        ></i>
-        <NavLink to="/" className="myspace-sidebar__logo">
-          DataShare
-        </NavLink>
+        <div className="myspace-sidebar__headerWrapper">
+          <i
+            id="sidebar-closeBtn"
+            className="fa-solid fa-x"
+            onClick={() => setIsSidebarOpen(false)}
+          ></i>
+          <NavLink to="/" className="myspace-sidebar__logo">
+            DataShare
+          </NavLink>
+        </div>
         <nav className="myspace-sidebar__nav">
           <button type="button" className="myspace-sidebar__nav-item is-active">
             Mes fichiers
@@ -207,7 +226,9 @@ export default function MySpace() {
         <p className="myspace-sidebar__copyright">Copyright DataShare© 2025</p>
       </aside>
 
-      <section className="myspace-workspace">
+      <section
+        className={`myspace-workspace ${isSidebarOpen ? "sidebar-open" : ""}`}
+      >
         <header className="myspace-toolbar">
           <button
             type="button"
@@ -338,23 +359,48 @@ export default function MySpace() {
                       <>
                         <button
                           type="button"
-                          className="myspace-action myspace-action--danger"
-                          onClick={() => void handleDelete(file.id)}
-                          disabled={deletingId === file.id}
+                          className="myspace-item__mobile-menu-trigger"
+                          aria-label="Options du fichier"
+                          onClick={() =>
+                            setActiveActionsMenuId((current) =>
+                              current === file.id ? null : file.id,
+                            )
+                          }
                         >
-                          <i className="fa-regular fa-trash-can"></i>
-                          {deletingId === file.id
-                            ? "Suppression..."
-                            : "Supprimer"}
+                          <i className="fa-solid fa-ellipsis-vertical"></i>
                         </button>
-                        <button
-                          type="button"
-                          className="myspace-action"
-                          onClick={() => handleAccess(file)}
+
+                        <div
+                          className={`myspace-item__actions-wrapper ${
+                            activeActionsMenuId === file.id ? "is-open" : ""
+                          }`}
                         >
-                          Accéder
-                          <i className="fa-solid fa-arrow-right"></i>
-                        </button>
+                          <button
+                            type="button"
+                            className="myspace-action myspace-action--danger"
+                            onClick={() => {
+                              setActiveActionsMenuId(null);
+                              void handleDelete(file.id);
+                            }}
+                            disabled={deletingId === file.id}
+                          >
+                            <i className="fa-regular fa-trash-can"></i>
+                            {deletingId === file.id
+                              ? "Suppression..."
+                              : "Supprimer"}
+                          </button>
+                          <button
+                            type="button"
+                            className="myspace-action"
+                            onClick={() => {
+                              setActiveActionsMenuId(null);
+                              handleAccess(file);
+                            }}
+                          >
+                            Accéder
+                            <i className="fa-solid fa-arrow-right"></i>
+                          </button>
+                        </div>
                       </>
                     ) : (
                       <span className="myspace-item__expired-note">
