@@ -10,7 +10,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import multer, { type StorageEngine } from 'multer';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiBody,
+} from '@nestjs/swagger';
+import multer from 'multer';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { StorageService } from './storage.service';
@@ -27,16 +34,40 @@ type JwtPayload = {
   email: string;
 };
 
+@ApiTags('Uploads')
 @Controller('uploads')
 export class StorageController {
   constructor(private readonly storageService: StorageService) {}
 
   @Post('me')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Uploader un fichier (utilisateur connecté)' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Fichier à uploader',
+        },
+        password: {
+          type: 'string',
+          description: 'Mot de passe optionnel pour protéger le fichier',
+        },
+        expirationDays: {
+          type: 'string',
+          description: 'Nombre de jours avant expiration (optionnel)',
+        },
+      },
+    },
+  })
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: multer.memoryStorage() as StorageEngine,
+      storage: multer.memoryStorage(),
       limits: { fileSize: 1024 * 1024 * 1024 },
     }),
   )
@@ -58,9 +89,31 @@ export class StorageController {
 
   @Post('anonymous')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Uploader un fichier (anonyme)' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Fichier à uploader',
+        },
+        password: {
+          type: 'string',
+          description: 'Mot de passe optionnel pour protéger le fichier',
+        },
+        expirationDays: {
+          type: 'string',
+          description: 'Nombre de jours avant expiration (optionnel)',
+        },
+      },
+    },
+  })
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: multer.memoryStorage() as StorageEngine,
+      storage: multer.memoryStorage(),
       limits: { fileSize: 1024 * 1024 * 1024 },
     }),
   )

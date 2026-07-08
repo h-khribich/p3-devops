@@ -92,7 +92,7 @@ export class StorageService implements OnModuleInit, OnModuleDestroy {
     }, this.cleanupIntervalMs);
   }
 
-  async onModuleDestroy() {
+  onModuleDestroy() {
     if (this.cleanupTimer) {
       clearInterval(this.cleanupTimer);
       this.cleanupTimer = null;
@@ -156,7 +156,8 @@ export class StorageService implements OnModuleInit, OnModuleDestroy {
       );
     }
 
-    let createdFile;
+    type CreatedFile = Awaited<ReturnType<typeof this.prisma.file.create>>;
+    let createdFile: CreatedFile;
 
     try {
       createdFile = await this.prisma.file.create({
@@ -173,7 +174,7 @@ export class StorageService implements OnModuleInit, OnModuleDestroy {
           status: 'uploaded',
         },
       });
-    } catch (error) {
+    } catch {
       try {
         await this.s3Client.send(
           new DeleteObjectCommand({
@@ -337,7 +338,7 @@ export class StorageService implements OnModuleInit, OnModuleDestroy {
   }
 
   async cleanupExpiredFiles() {
-    let expiredFiles;
+    let expiredFiles: { id: number; s3Key: string }[] = [];
 
     try {
       expiredFiles = await this.prisma.file.findMany({

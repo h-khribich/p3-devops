@@ -168,22 +168,9 @@ export default function MySpace() {
       return;
     }
 
-    const password = window.prompt(
-      "Ce fichier est protégé. Saisissez le mot de passe pour l'ouvrir.",
-    );
-
-    if (password === null) {
-      return;
-    }
-
-    if (password.trim().length === 0) {
-      setError("Le mot de passe est requis pour accéder à ce fichier.");
-      return;
-    }
-
-    navigate(
-      `${file.downloadPath}?password=${encodeURIComponent(password.trim())}`,
-    );
+    // On redirige vers la page de téléchargement sans le mot de passe dans l'URL,
+    // pour des raisons de sécurité. L'utilisateur le saisira sur place.
+    navigate(file.downloadPath);
   };
 
   const handleLogout = () => {
@@ -242,6 +229,7 @@ export default function MySpace() {
             type="button"
             id="user__mobile"
             aria-label="Profil utilisateur"
+            onClick={handleLogout}
           >
             <i className="fa-solid fa-user"></i>
           </button>
@@ -384,10 +372,10 @@ export default function MySpace() {
                             }}
                             disabled={deletingId === file.id}
                           >
-                            <i className="fa-regular fa-trash-can"></i>
                             {deletingId === file.id
                               ? "Suppression..."
                               : "Supprimer"}
+                            <i className="fa-regular fa-trash-can"></i>
                           </button>
                           <button
                             type="button"

@@ -142,6 +142,7 @@ export default function Download() {
 
     setIsDownloading(true);
     setError("");
+    setPasswordError("");
 
     try {
       const response = await fetch(`${API_BASE_URL}/downloads/${token}/file`, {
@@ -152,6 +153,10 @@ export default function Download() {
         body: JSON.stringify({ password: password.trim() || undefined }),
       });
 
+      if (response.status === 401) {
+        throw new Error("Mot de passe invalide.");
+      }
+
       if (!response.ok) {
         throw new Error(
           await readApiError(response, "Téléchargement impossible."),
@@ -161,11 +166,16 @@ export default function Download() {
       const blob = await response.blob();
       triggerBrowserDownload(blob, metadata?.filename ?? "download");
     } catch (requestError) {
-      setError(
+      const message =
         requestError instanceof Error
           ? requestError.message
-          : "Téléchargement impossible.",
-      );
+          : "Téléchargement impossible.";
+
+      if (metadata?.passwordRequired) {
+        setPasswordError(message);
+      } else {
+        setError(message);
+      }
     } finally {
       setIsDownloading(false);
     }
