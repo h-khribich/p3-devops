@@ -13,13 +13,20 @@ export default function Register() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  // Submit the registration form with a small amount of validation before calling the API.
+  const isValidEmail = (value: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
 
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
+
+    if (!trimmedEmail || !isValidEmail(trimmedEmail)) {
+      setError("Veuillez saisir une adresse email valide.");
+      return;
+    }
 
     if (trimmedPassword !== passwordConfirmation.trim()) {
       setError("Les mots de passe ne correspondent pas.");
@@ -51,7 +58,6 @@ export default function Register() {
         );
       }
 
-      // The backend only creates the user here, so we send the user to the login page.
       await response.json().catch(() => null);
       navigate("/login");
     } catch (requestError) {
@@ -71,7 +77,11 @@ export default function Register() {
         <section className="register-page__card">
           <h2 className="register-page__title">Créer un compte</h2>
 
-          <form className="register-page__form" onSubmit={handleSubmit}>
+          <form
+            className="register-page__form"
+            onSubmit={handleSubmit}
+            data-cy="register-form"
+          >
             <div className="input">
               <label htmlFor="register-email" className="input__label">
                 Email
@@ -79,10 +89,12 @@ export default function Register() {
               <input
                 id="register-email"
                 type="email"
+                required
                 placeholder="Saisissez votre email..."
                 value={email}
                 onChange={(event) => setEmail(event.currentTarget.value)}
                 className="input__control"
+                data-cy="register-email"
               />
             </div>
 
@@ -93,10 +105,13 @@ export default function Register() {
               <input
                 id="register-password"
                 type="password"
+                required
+                minLength={8}
                 placeholder="Saisissez votre mot de passe..."
                 value={password}
                 onChange={(event) => setPassword(event.currentTarget.value)}
                 className="input__control"
+                data-cy="register-password"
               />
             </div>
 
@@ -110,12 +125,15 @@ export default function Register() {
               <input
                 id="register-password-confirmation"
                 type="password"
+                required
+                minLength={8}
                 placeholder="Saisissez le à nouveau"
                 value={passwordConfirmation}
                 onChange={(event) =>
                   setPasswordConfirmation(event.currentTarget.value)
                 }
                 className="input__control"
+                data-cy="register-confirm-password"
               />
             </div>
 
@@ -132,6 +150,7 @@ export default function Register() {
                 type="submit"
                 className="button button--primary button--small"
                 disabled={isSubmitting}
+                data-cy="register-submit"
               >
                 {isSubmitting ? "Création..." : "Créer mon compte"}
               </button>

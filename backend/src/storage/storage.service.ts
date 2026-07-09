@@ -76,7 +76,29 @@ export class StorageService implements OnModuleInit, OnModuleDestroy {
     }
 
     this.bucketName = bucketName;
-    this.s3Client = new S3Client({ region });
+
+    const s3Config: Record<string, unknown> = { region };
+
+    // Support MinIO / S3-compatible local (endpoint + path-style)
+    const endpoint = configService.get<string>('AWS_ENDPOINT');
+    const forcePathStyle = configService.get<string>('AWS_FORCE_PATH_STYLE');
+    const accessKeyId = configService.get<string>('AWS_ACCESS_KEY_ID');
+    const secretAccessKey = configService.get<string>('AWS_SECRET_ACCESS_KEY');
+
+    if (endpoint) {
+      s3Config.endpoint = endpoint;
+    }
+    if (forcePathStyle === 'true') {
+      s3Config.forcePathStyle = true;
+    }
+    if (accessKeyId && secretAccessKey) {
+      s3Config.credentials = {
+        accessKeyId,
+        secretAccessKey,
+      };
+    }
+
+    this.s3Client = new S3Client(s3Config);
     this.cleanupIntervalMs = 60_000;
   }
 

@@ -1,9 +1,19 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Active la validation globale des DTOs (class-validator + class-transformer)
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // Supprime les propriétés non décorées
+      forbidNonWhitelisted: true, // Rejette les requêtes avec des props inconnues
+      transform: true, // Transforme automatiquement les types
+    }),
+  );
 
   // Configuration de base d'OpenAPI / Swagger
   const config = new DocumentBuilder()

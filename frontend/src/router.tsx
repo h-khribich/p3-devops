@@ -5,9 +5,9 @@ import Register from "./pages/Register.tsx";
 import LandingPage from "./pages/LandingPage.tsx";
 import Upload from "./pages/Upload.tsx";
 import Download from "./pages/Download.tsx";
+import MySpace from "./pages/MySpace.tsx";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
-import ProtectedMySpace from "./pages/ProtectedMySpace.tsx";
-import ProtectedDashboardLayout from "./pages/ProtectedDashboardLayout.tsx";
+import ProtectedRoute from "./ProtectedRoute.tsx";
 
 export const router = createBrowserRouter([
   {
@@ -21,14 +21,17 @@ export const router = createBrowserRouter([
       { path: "upload", Component: Upload },
       { path: "download/:token", Component: Download },
       {
+        path: "my-space",
+        element: (
+          <ProtectedRoute>
+            <MySpace />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "*",
         Component: NotFoundPage,
       },
     ],
-  },
-  {
-    path: "/",
-    Component: ProtectedDashboardLayout,
-    children: [{ path: "my-space", Component: ProtectedMySpace }],
   },
 ]);

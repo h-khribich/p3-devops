@@ -1,5 +1,6 @@
 import {
   Injectable,
+  BadRequestException,
   ConflictException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -72,7 +73,13 @@ export class AuthService {
   }
 
   private normalizeEmail(email: string) {
-    return email.trim().toLowerCase();
+    const normalized = email.trim().toLowerCase();
+
+    if (!normalized) {
+      throw new BadRequestException("L'adresse email ne peut pas être vide.");
+    }
+
+    return normalized;
   }
 
   private toAuthenticatedUser(user: {

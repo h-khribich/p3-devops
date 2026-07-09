@@ -215,7 +215,11 @@ export default function Upload() {
           <h2 className="upload-page__title">Ajouter un fichier</h2>
 
           {!uploadResult ? (
-            <form className="upload-page__form" onSubmit={handleSubmit}>
+            <form
+              className="upload-page__form"
+              onSubmit={handleSubmit}
+              data-cy="upload-form"
+            >
               <div className="upload-page__file-section">
                 <input
                   type="file"
@@ -223,6 +227,7 @@ export default function Upload() {
                   ref={fileInputRef}
                   onChange={handleFileChange}
                   style={{ display: "none" }}
+                  data-cy="upload-file-input"
                 />
 
                 {!file ? (
@@ -337,6 +342,7 @@ export default function Upload() {
                 type="submit"
                 className="button button--primary"
                 disabled={!file || isFileTooLarge || isUploading}
+                data-cy="upload-submit"
               >
                 <img
                   src={uploadIcon}
@@ -393,6 +399,7 @@ export default function Upload() {
                 href={downloadUrl}
                 target="_blank"
                 rel="noreferrer"
+                data-cy="upload-success-link"
               >
                 {displayLink}
               </a>

@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  postgres-e2e:
+    image: postgres:16-alpine
+    container_name: datashare-e2e-postgres
+    environment:
+      POSTGRES_DB: datashare_e2e
+      POSTGRES_USER: datashare
+      POSTGRES_PASSWORD: datashare_e2e_pass
+    ports:
+      - "5433:5432"
+    tmpfs: /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U datashare -d datashare_e2e"]
+      interval: 2s
+      retries: 15
+      timeout: 5s
+
+  minio-e2e:
+    image: minio/minio:latest
+    container_name: datashare-e2e-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    tmpfs: /data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 3s
+      retries: 10
+      timeout: 5s
+
+  # Service d'initialisation : crée le bucket MinIO via l'API S3
+  setup:
+    image: minio/mc:latest
+    container_name: datashare-e2e-setup
+    depends_on:
+      postgres-e2e:
+        condition: service_healthy
+      minio-e2e:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "
+        echo '=== Waiting for MinIO...' &&
+        sleep 3 &&
+        echo '=== Configuring MinIO client...' &&
+        mc alias set minio http://minio-e2e:9000 minioadmin minioadmin123 &&
+        echo '=== Creating bucket datashare-e2e...' &&
+        mc mb minio/datashare-e2e --ignore-existing &&
+        echo '=== Bucket created successfully ==='
+      "

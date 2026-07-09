@@ -24,12 +24,18 @@ export default function Login() {
     setIsSubmitting(true);
 
     try {
+      const trimmedEmail = email.trim();
+
+      if (!trimmedEmail) {
+        throw new Error("Veuillez saisir votre email.");
+      }
+
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: trimmedEmail, password }),
       });
 
       if (!response.ok) {
@@ -56,7 +62,11 @@ export default function Login() {
         <section className="login-page__card">
           <h2 className="login-page__title">Connexion</h2>
 
-          <form className="login-page__form" onSubmit={handleSubmit}>
+          <form
+            className="login-page__form"
+            onSubmit={handleSubmit}
+            data-cy="login-form"
+          >
             <div className="input">
               <label htmlFor="email" className="input__label">
                 Email
@@ -64,10 +74,12 @@ export default function Login() {
               <input
                 id="email"
                 type="email"
+                required
                 placeholder="Saisissez votre email..."
                 value={email}
                 onChange={(event) => setEmail(event.currentTarget.value)}
                 className="input__control"
+                data-cy="login-email"
               />
             </div>
 
@@ -78,10 +90,12 @@ export default function Login() {
               <input
                 id="password"
                 type="password"
+                required
                 placeholder="Saisissez votre mot de passe..."
                 value={password}
                 onChange={(event) => setPassword(event.currentTarget.value)}
                 className="input__control"
+                data-cy="login-password"
               />
             </div>
 
@@ -98,6 +112,7 @@ export default function Login() {
                 type="submit"
                 className="button button--primary button--small"
                 disabled={isSubmitting}
+                data-cy="login-submit"
               >
                 {isSubmitting ? "Connexion..." : "Connexion"}
               </button>

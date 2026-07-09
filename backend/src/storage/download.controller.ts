@@ -3,6 +3,8 @@ import {
   Controller,
   Get,
   Header,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   StreamableFile,
@@ -22,6 +24,7 @@ export class DownloadController {
   }
 
   @Post(':token/file')
+  @HttpCode(HttpStatus.OK)
   @Header('Content-Type', 'application/octet-stream')
   @ApiOperation({ summary: 'Télécharger le fichier (flux binaire)' })
   async downloadFile(

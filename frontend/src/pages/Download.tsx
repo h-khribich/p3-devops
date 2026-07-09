@@ -192,7 +192,11 @@ export default function Download() {
           ) : error ? (
             <p className="file-error-message">{error}</p>
           ) : metadata ? (
-            <form className="upload-page__form" onSubmit={handleDownload}>
+            <form
+              className="upload-page__form"
+              onSubmit={handleDownload}
+              data-cy="download-form"
+            >
               <div className="file-preview upload-success__file-preview">
                 <div className="file-preview__icon">
                   <svg
@@ -266,6 +270,7 @@ export default function Download() {
                   metadata.expired ||
                   (metadata.passwordRequired && !password)
                 }
+                data-cy="download-submit"
               >
                 <DownloadIcon />
                 {metadata.expired

@@ -273,9 +273,13 @@ export default function MySpace() {
           ) : files.length === 0 ? (
             <p className="myspace-status">Aucun fichier pour ce filtre.</p>
           ) : (
-            <div className="myspace-list">
+            <div className="myspace-list" data-cy="file-list">
               {files.map((file) => (
-                <article key={file.id} className="myspace-item">
+                <article
+                  key={file.id}
+                  className="myspace-item"
+                  data-cy="file-item"
+                >
                   <div className="myspace-item__main">
                     <span
                       className="myspace-item__file-icon"
