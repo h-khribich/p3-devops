@@ -8,8 +8,7 @@ export default defineConfig({
     react(),
     istanbul({
       cypress: true,
-      requireEnv: false,
-      nycOutput: ".nyc_output",
+      requireEnv: true,
       exclude: ["node_modules", "test", "coverage", ".nyc_output"],
     }),
   ],

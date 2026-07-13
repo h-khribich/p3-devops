@@ -15,6 +15,7 @@ const config: Config = {
     '!src/**/*.decorator.ts',
   ],
   coverageDirectory: './coverage',
+  coverageReporters: ['json', 'lcov', 'text'],
   testEnvironment: 'node',
   moduleNameMapper: {
     '^src/(.*)$': '<rootDir>/src/$1',

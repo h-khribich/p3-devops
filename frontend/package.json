@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test:e2e": "start-server-and-test 'npm run dev' http://localhost:5173 'cypress run'",
-    "test:e2e:cov": "start-server-and-test 'npm run dev' http://localhost:5173 'cypress run --env coverage=true'",
+    "test:e2e:cov": "start-server-and-test 'VITE_COVERAGE=true npm run dev' http://localhost:5173 'cypress run --env coverage=true'",
     "test:e2e:open": "start-server-and-test 'npm run dev' http://localhost:5173 'cypress open'"
   },
   "dependencies": {

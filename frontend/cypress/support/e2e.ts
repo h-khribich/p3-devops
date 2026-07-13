@@ -3,7 +3,7 @@ import "@cypress/code-coverage/support";
 
 /**
  * Commande Cypress personnalisée pour se connecter via l'API.
- * Retourne le token JWT pour l'utiliser dans des requêtes API后续.
+ * Retourne le token JWT pour l'utiliser dans des requêtes API.
  */
 Cypress.Commands.add("loginApi", (email: string, password: string) => {
   return cy

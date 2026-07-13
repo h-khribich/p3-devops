@@ -206,11 +206,16 @@ echo ""
 echo "=============================================="
 echo " 7. Coverage E2E généré"
 echo "=============================================="
-if [ -f "frontend/coverage/coverage-final.json" ]; then
+if [ -f "$ROOT_DIR/frontend/coverage/coverage-final.json" ]; then
   echo "   ✓ Coverage frontend disponible dans frontend/coverage/"
+  # Copier vers .nyc_output avec un nom dédié pour la fusion ultérieure
+  mkdir -p "$ROOT_DIR/.nyc_output"
+  cp "$ROOT_DIR/frontend/coverage/coverage-final.json" "$ROOT_DIR/.nyc_output/coverage-frontend-e2e.json"
+  echo "   ✓ Fichier copié vers .nyc_output/coverage-frontend-e2e.json"
+  echo ""
   echo "   Résumé :"
   npx --yes nyc report --reporter text --report-dir /dev/null \
-    --temp-dir frontend/coverage 2>/dev/null || true
+    --temp-dir "$ROOT_DIR/frontend/coverage" 2>/dev/null || true
 else
   echo "   ⚠ Aucun rapport de coverage frontend trouvé"
 fi

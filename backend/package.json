@@ -16,9 +16,7 @@
     "test": "jest --config jest-unit.config.ts",
     "test:watch": "jest --config jest-unit.config.ts --watch",
     "test:cov": "jest --config jest-unit.config.ts --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./jest-e2e.config.ts",
-    "test:all": "jest --config jest-unit.config.ts && jest --config ./test/jest-e2e.json"
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
