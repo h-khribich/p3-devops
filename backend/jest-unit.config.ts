@@ -3,7 +3,10 @@ import type { Config } from 'jest';
 const config: Config = {
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: '.',
-  testMatch: ['<rootDir>/tests/unitTesting/**/*.spec.ts'],
+  testMatch: [
+    '<rootDir>/tests/unitTesting/**/*.spec.ts',
+    '<rootDir>/tests/integrationTesting/**/*.spec.ts',
+  ],
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
