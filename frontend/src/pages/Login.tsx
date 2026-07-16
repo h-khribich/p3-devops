@@ -104,7 +104,7 @@ export default function Login() {
             <div className="login-page__actions">
               <NavLink
                 to="/register"
-                className="button button--secondary button--small"
+                className="button button--tertiary button--small"
               >
                 Créer un compte
               </NavLink>

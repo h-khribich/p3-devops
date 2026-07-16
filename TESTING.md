@@ -124,6 +124,8 @@ Le script bash orchestre dans cet ordre:
 
 Le script fusionne la couverture de test back et front et crée un rapport final grâce au plgin Istanbul et nycOutput. La couverture finale est de **74**%.
 
+![test-coverage](image-1.png)
+
 - **Rapport fusionné** : _coverage-merged/index.html_
 - **Backend seul** : _backend/coverage/lcov-report/index.html_
 - **Frontend seul** : _frontend/coverage/lcov-report/index.html_
