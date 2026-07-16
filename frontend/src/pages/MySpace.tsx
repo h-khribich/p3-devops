@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, NavLink } from "react-router";
 import { clearAccessToken, getAccessToken } from "../auth";
 import { API_BASE_URL, getDaysLeft, readApiError } from "./pageHelpers.ts";
+import PasswordModal from "../components/PasswordModal";
 import "../style/components/buttonComponent.css";
 import "../style/pages/MySpace.css";
 
@@ -38,6 +39,13 @@ function getStatusLabel(file: UserFile) {
   return `Expire dans ${daysLeft} jours`;
 }
 
+class PasswordError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "PasswordError";
+  }
+}
+
 export default function MySpace() {
   const [filter, setFilter] = useState<FilterKey>("active");
   const [files, setFiles] = useState<UserFile[]>([]);
@@ -45,6 +53,10 @@ export default function MySpace() {
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [passwordModalFileId, setPasswordModalFileId] = useState<number | null>(
+    null,
+  );
+  const [modalPasswordError, setModalPasswordError] = useState("");
   const [activeActionsMenuId, setActiveActionsMenuId] = useState<number | null>(
     null,
   );
@@ -98,30 +110,10 @@ export default function MySpace() {
     void loadFiles();
   }, [filter, token, navigate]);
 
-  const handleDelete = async (fileId: number) => {
+  const handleDelete = async (fileId: number, password?: string) => {
     if (!token) return;
-    const file = files.find((item) => item.id === fileId);
-
-    let password: string | undefined;
-    if (file?.passwordRequired) {
-      const input = window.prompt(
-        "Ce fichier est protégé. Saisissez le mot de passe pour le supprimer.",
-      );
-
-      if (input === null) {
-        return;
-      }
-
-      if (input.trim().length === 0) {
-        setError("Le mot de passe est requis pour supprimer ce fichier.");
-        return;
-      }
-
-      password = input.trim();
-    }
 
     setDeletingId(fileId);
-    setError("");
 
     try {
       const response = await fetch(`${API_BASE_URL}/files/me/${fileId}`, {
@@ -134,7 +126,16 @@ export default function MySpace() {
       });
 
       if (response.status === 401) {
-        // Token expiré lors de la tentative de suppression
+        const errorBody = await readApiError(
+          response,
+          "Suppression impossible.",
+        );
+        // Si le message contient "mot de passe", c'est un mauvais mot de passe,
+        // pas une session expirée → on le remonte sans déconnecter
+        if (/mot de passe/i.test(errorBody)) {
+          throw new PasswordError(errorBody);
+        }
+        // Sinon c'est un token invalide/expiré → déconnexion
         clearAccessToken();
         navigate("/login");
         return;
@@ -146,8 +147,14 @@ export default function MySpace() {
         );
       }
 
+      // Succès : on ferme la modale et on retire le fichier de la liste
+      setPasswordModalFileId(null);
       setFiles((current) => current.filter((file) => file.id !== fileId));
     } catch (requestError) {
+      if (requestError instanceof PasswordError) {
+        setModalPasswordError(requestError.message);
+        return;
+      }
       setError(
         requestError instanceof Error
           ? requestError.message
@@ -156,6 +163,29 @@ export default function MySpace() {
     } finally {
       setDeletingId(null);
     }
+  };
+
+  const handleDeleteClick = (fileId: number) => {
+    const file = files.find((item) => item.id === fileId);
+
+    if (file?.passwordRequired) {
+      setModalPasswordError("");
+      setPasswordModalFileId(fileId);
+    } else {
+      void handleDelete(fileId);
+    }
+  };
+
+  const handlePasswordConfirm = (password: string) => {
+    const fileId = passwordModalFileId;
+    if (fileId !== null) {
+      void handleDelete(fileId, password);
+    }
+  };
+
+  const handlePasswordCancel = () => {
+    setPasswordModalFileId(null);
+    setModalPasswordError("");
   };
 
   const handleAccess = (file: UserFile) => {
@@ -372,7 +402,7 @@ export default function MySpace() {
                             className="myspace-action myspace-action--danger"
                             onClick={() => {
                               setActiveActionsMenuId(null);
-                              void handleDelete(file.id);
+                              handleDeleteClick(file.id);
                             }}
                             disabled={deletingId === file.id}
                           >
@@ -406,6 +436,18 @@ export default function MySpace() {
           )}
         </div>
       </section>
+
+      {passwordModalFileId !== null && (
+        <PasswordModal
+          filename={
+            files.find((f) => f.id === passwordModalFileId)?.filename ?? ""
+          }
+          onConfirm={handlePasswordConfirm}
+          onCancel={handlePasswordCancel}
+          error={modalPasswordError || undefined}
+          isDeleting={deletingId === passwordModalFileId}
+        />
+      )}
     </main>
   );
 }

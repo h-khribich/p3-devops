@@ -64,7 +64,7 @@ Résultat => Une suite de **5** tests critiques E2E avec **63**% de couverture e
 
 ## Script master test
 
-Un script `run-all-with-coverage.sh` à la racine du projet dans /scripts permet de lancer tout le processus des tests unitaires, intégration et E2E avec **Docker** avec une couverture de test qui couvre tout le projet.
+Un script `run-all-tests-with-coverage.sh` à la racine du projet dans /scripts permet de lancer tout le processus des tests unitaires, intégration et E2E avec **Docker** avec une couverture de test qui couvre tout le projet.
 
 #### Infrastructure Docker des tests
 
