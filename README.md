@@ -53,11 +53,11 @@ AWS_SECRET_ACCESS_KEY="ton-secret-key"
 
 ⚠️
 
-### 3. Exécuter les migrations Prisma
+### 3. Générer le client Prisma
 
 ```bash
 cd backend
-npx prisma migrate deploy
+npx prisma generate
 ```
 
 Cela crée les tables dans PostgreSQL.
