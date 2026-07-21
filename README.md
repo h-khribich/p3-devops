@@ -26,9 +26,7 @@ cd ..
 
 ### 2. Configurer les variables d'environnement (optionnel, voir avertissement)
 
-Le backend lit un fichier `.env` à la racine de `/backend`. Ce fichier **est versionné temporaiement**. Dans le futur, il faudra effectuer cette étape de configuration, pour l'instant, vous pouvez passer à l'étape 3.
-
-Crée `backend/.env` avec les variables suivantes :
+Le backend lit un fichier `.env` à la racine de `/backend`. Copiez le fichier .env.example pour créer votre fichier .env avec les variables suivantes :
 
 ```env
 # ── PostgreSQL ──
@@ -37,19 +35,16 @@ DATABASE_URL="postgresql://user:password@localhost:5432/datashare"
 # ── JWT ──
 JWT_SECRET="une-chaine-secrete-tres-longue"
 
-# ── AWS S3 (ou compatible) ──
+# ── AWS S3 ──
 AWS_REGION="us-east-1"
 AWS_S3_BUCKET="datashare"
 AWS_ACCESS_KEY_ID="ton-access-key"
 AWS_SECRET_ACCESS_KEY="ton-secret-key"
-# Si tu utilises MinIO ou un S3 compatible en local :
-# AWS_ENDPOINT="http://localhost:9000"
-# AWS_FORCE_PATH_STYLE="true"
 ```
 
 ⚠️
 
-> Pour ce MVP, j'ai ajouté le fichier env. avec des accès disponibles Prisma et AWS non sensibles pour faciliter le démarrage et le partage du projet. Pour la v1, il faudra **obligatoirement** effectuer cette étape car le fichier .env sera ignoré pour des raisons de sécurité
+> Pour ce MVP, j'ai ajouté le fichier env. avec des accès disponibles Prisma et AWS non sensibles pour faciliter le démarrage et le partage du projet. ! Pour utiliser la même session AWS, renseignez la clé ID et la clé d'accès fournies dans le fichier texte qui contient le lien de ce repo !
 
 ⚠️
 
