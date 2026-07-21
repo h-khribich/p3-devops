@@ -12,4 +12,7 @@ export default defineConfig({
       exclude: ["node_modules", "test", "coverage", ".nyc_output"],
     }),
   ],
+  build: {
+    chunkSizeWarningLimit: 500,
+  },
 });

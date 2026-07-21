@@ -34,7 +34,7 @@ export default tseslint.config(
   },
   // Désactiver les règles trop strictes pour les fichiers de test
   {
-    files: ['tests/**/*.ts'],
+    files: ['tests/**/*.ts', 'tests/*.js'],
     rules: {
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
