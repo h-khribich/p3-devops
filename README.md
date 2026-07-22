@@ -24,7 +24,7 @@ npm install
 cd ..
 ```
 
-### 2. Configurer les variables d'environnement (optionnel, voir avertissement)
+### 2. Configurer les variables d'environnement (voir avertissement)
 
 Le backend lit un fichier `.env` à la racine de `/backend`. Copiez le fichier .env.example pour créer votre fichier .env avec les variables suivantes :
 
@@ -38,13 +38,13 @@ JWT_SECRET="une-chaine-secrete-tres-longue"
 # ── AWS S3 ──
 AWS_REGION="us-east-1"
 AWS_S3_BUCKET="datashare"
-AWS_ACCESS_KEY_ID="ton-access-key"
-AWS_SECRET_ACCESS_KEY="ton-secret-key"
+AWS_ACCESS_KEY_ID="ton-access-key"      // disponible dans le fichier qui contient le lien de ce repo
+AWS_SECRET_ACCESS_KEY="ton-secret-key"  // disponible dans le fichier qui contient le lien de ce repo
 ```
 
 ⚠️
 
-> Pour ce MVP, j'ai ajouté le fichier env. avec des accès disponibles Prisma et AWS non sensibles pour faciliter le démarrage et le partage du projet. ! Pour utiliser la même session AWS, renseignez la clé ID et la clé d'accès fournies dans le fichier texte qui contient le lien de ce repo !
+> Ce projet ne peut pas fonctionner sans les clés AWS. Ces dernières sont disponibles dans le fichier qui contient le lien de ce repo.
 
 ⚠️
 
