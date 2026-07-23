@@ -100,6 +100,8 @@ cd frontend && npm run dev
 
 Sans ces deux services, l'application backend refusera de fonctionner correctement.
 
+**Pour les besoins de ce MVP, j'ai déjà implementé une BDD et un conteneur S3 tous deux déjà actifs**
+
 ---
 
 ## Scripts disponibles
